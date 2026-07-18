@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="theme-color" content="#070b18" />
+  <title>魔法石 AR探索</title>
+
+  <!-- A-FrameはThree.js上で動作。AR.js 3.4.8のマーカートラッキングを使用 -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#050816; }
+    .ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; color: white; }
+    .top {
+      position:absolute; top:0; left:0; right:0; padding: max(16px, env(safe-area-inset-top)) 16px 12px;
+      background: linear-gradient(180deg,rgba(5,8,22,.92),rgba(5,8,22,0));
+      text-align:center;
+    }
+    h1 { margin:0; font-size:21px; letter-spacing:.08em; text-shadow:0 2px 12px #000; }
+    #status { display:inline-block; margin-top:8px; padding:7px 12px; border-radius:999px; background:rgba(0,0,0,.55); font-size:13px; }
+    .guide {
+      position:absolute; left:50%; top:50%; width:min(68vw,300px); aspect-ratio:1; transform:translate(-50%,-50%);
+      border:2px solid rgba(255,255,255,.75); border-radius:18px;
+      box-shadow:0 0 0 9999px rgba(0,0,0,.12), inset 0 0 30px rgba(95,245,255,.13);
+      transition:.25s;
+    }
+    .guide::before,.guide::after { content:""; position:absolute; inset:14%; border:1px dashed rgba(255,255,255,.35); border-radius:10px; }
+    .guide.found { border-color:#8affc1; box-shadow:0 0 35px rgba(99,255,183,.75),0 0 0 9999px rgba(0,0,0,.05); }
+    .bottom {
+      position:absolute; left:0; right:0; bottom:0; padding:16px 16px max(20px, env(safe-area-inset-bottom));
+      text-align:center; background:linear-gradient(0deg,rgba(5,8,22,.94),rgba(5,8,22,0));
+    }
+    #getBtn {
+      pointer-events:auto; border:0; border-radius:999px; padding:15px 28px; min-width:210px;
+      font-weight:800; font-size:17px; color:#071015;
+      background:linear-gradient(135deg,#fff6a9,#71f8d3); box-shadow:0 8px 28px rgba(80,255,211,.35);
+      opacity:.35; transform:scale(.97); transition:.2s;
+    }
+    #getBtn.ready { opacity:1; transform:scale(1); }
+    #getBtn:disabled { cursor:not-allowed; }
+    #hint { margin:10px 0 0; font-size:13px; opacity:.85; }
+    #toast {
+      position:absolute; left:50%; top:22%; transform:translate(-50%,-20px) scale(.9);
+      width:min(88vw,420px); padding:20px; border:1px solid rgba(255,255,255,.22); border-radius:22px;
+      background:rgba(8,16,35,.92); backdrop-filter:blur(12px); text-align:center;
+      opacity:0; transition:.3s; box-shadow:0 20px 60px rgba(0,0,0,.45);
+    }
+    #toast.show { opacity:1; transform:translate(-50%,0) scale(1); }
+    #toast strong { display:block; font-size:24px; margin-bottom:7px; color:#8affc1; }
+    .sparkle { position:absolute; width:7px; height:7px; border-radius:50%; background:white; animation:float 1.8s ease-in-out infinite; opacity:.8; }
+    @keyframes float { 0%,100%{transform:translateY(0) scale(.6);opacity:.25} 50%{transform:translateY(-24px) scale(1.2);opacity:1} }
+  </style>
+
+  <script>
+    AFRAME.registerComponent('magic-crystal', {
+      init: function () {
+        const el = this.el;
+        let t = 0;
+        this.tick = function(time, delta) {
+          t += delta / 1000;
+          el.object3D.rotation.y = t * 1.15;
+          el.object3D.position.y = 0.72 + Math.sin(t * 2.2) * 0.08;
+        };
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="ui">
+    <div class="top">
+      <h1>✦ 魔法石 AR探索 ✦</h1>
+      <div id="status">マーカーを探しています…</div>
+    </div>
+
+    <div id="guide" class="guide"></div>
+
+    <div id="toast">
+      <strong>魔法石を獲得！</strong>
+      <span>あなたの冒険の記録に保存しました。</span>
+    </div>
+
+    <div class="bottom">
+      <button id="getBtn" disabled>魔法石を獲得する</button>
+      <p id="hint">枠の中にHIROマーカーを映してください</p>
+    </div>
+  </div>
+
+  <a-scene
+    embedded
+    vr-mode-ui="enabled:false"
+    renderer="antialias:true; alpha:true; logarithmicDepthBuffer:true"
+    arjs="sourceType:webcam; trackingMethod:best; debugUIEnabled:false; detectionMode:mono;"
+  >
+    <a-marker
+      id="marker"
+      preset="hiro"
+      emitevents="true"
+      smooth="true"
+      smooth-count="10"
+      smooth-tolerance="0.01"
+      smooth-threshold="5"
+    >
+      <a-entity id="crystal" magic-crystal position="0 0.72 0">
+        <a-octahedron
+          radius="0.43"
+          color="#65FFE0"
+          material="shader:standard; metalness:.25; roughness:.18; emissive:#116e62; emissiveIntensity:.65; transparent:true; opacity:.94"
+          animation__pulse="property:scale; dir:alternate; dur:900; loop:true; to:1.12 1.12 1.12; easing:easeInOutSine"
+        ></a-octahedron>
+        <a-octahedron
+          radius="0.58"
+          color="#B8FFF2"
+          material="wireframe:true; transparent:true; opacity:.5"
+          animation="property:rotation; dur:5000; loop:true; to:360 720 360; easing:linear"
+        ></a-octahedron>
+        <a-torus
+          position="0 -0.48 0"
+          rotation="90 0 0"
+          radius="0.48"
+          radius-tubular="0.022"
+          color="#FFF3A0"
+          material="emissive:#a67e00; emissiveIntensity:.8"
+          animation="property:rotation; dur:2800; loop:true; to:90 0 360; easing:linear"
+        ></a-torus>
+        <a-sphere position=".55 .15 .05" radius=".045" color="#FFFFFF"
+          animation="property:position; dir:alternate; dur:1200; loop:true; to:.42 .82 -.12; easing:easeInOutSine"></a-sphere>
+        <a-sphere position="-.5 .35 -.08" radius=".035" color="#FFF4A8"
+          animation="property:position; dir:alternate; dur:1600; loop:true; to:-.35 .95 .15; easing:easeInOutSine"></a-sphere>
+        <a-text value="MAGIC STONE" align="center" color="#FFFFFF" width="3.2" position="0 -.73 0" rotation="-90 0 0"></a-text>
+      </a-entity>
+
+      <a-circle position="0 .01 0" rotation="-90 0 0" radius=".72"
+        material="color:#58ffe0; transparent:true; opacity:.16"
+        animation="property:scale; dir:alternate; dur:1000; loop:true; to:1.22 1.22 1.22"></a-circle>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    const marker = document.getElementById('marker');
+    const statusEl = document.getElementById('status');
+    const guide = document.getElementById('guide');
+    const btn = document.getElementById('getBtn');
+    const toast = document.getElementById('toast');
+    const hint = document.getElementById('hint');
+    let visible = false;
+
+    marker.addEventListener('markerFound', () => {
+      visible = true;
+      statusEl.textContent = '魔法石を発見しました！';
+      guide.classList.add('found');
+      btn.disabled = false;
+      btn.classList.add('ready');
+      hint.textContent = 'ボタンを押して魔法石を獲得しよう';
+      if (navigator.vibrate) navigator.vibrate([80,40,80]);
+    });
+
+    marker.addEventListener('markerLost', () => {
+      visible = false;
+      statusEl.textContent = 'マーカーを探しています…';
+      guide.classList.remove('found');
+      if (!localStorage.getItem('magicStone1')) {
+        btn.disabled = true;
+        btn.classList.remove('ready');
+      }
+    });
+
+    if (localStorage.getItem('magicStone1')) {
+      btn.textContent = '✓ 獲得済み';
+      btn.disabled = false;
+      btn.classList.add('ready');
+      hint.textContent = 'この端末には獲得記録が保存されています';
+    }
+
+    btn.addEventListener('click', () => {
+      if (!visible && !localStorage.getItem('magicStone1')) return;
+      localStorage.setItem('magicStone1', new Date().toISOString());
+      btn.textContent = '✓ 獲得済み';
+      toast.classList.add('show');
+      if (navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    });
+
+    window.addEventListener('camera-error', () => {
+      statusEl.textContent = 'カメラを許可してください';
+    });
+  </script>
+</body>
+</html>
