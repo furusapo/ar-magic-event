@@ -1,69 +1,57 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <meta name="theme-color" content="#070b18" />
-  <title>魔法石 AR探索</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#071426">
+  <title>青い子どもドラゴン AR</title>
 
-  <!-- A-FrameはThree.js上で動作。AR.js 3.4.8のマーカートラッキングを使用 -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#050816; }
-    .ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; color: white; }
-    .top {
-      position:absolute; top:0; left:0; right:0; padding: max(16px, env(safe-area-inset-top)) 16px 12px;
-      background: linear-gradient(180deg,rgba(5,8,22,.92),rgba(5,8,22,0));
-      text-align:center;
-    }
-    h1 { margin:0; font-size:21px; letter-spacing:.08em; text-shadow:0 2px 12px #000; }
-    #status { display:inline-block; margin-top:8px; padding:7px 12px; border-radius:999px; background:rgba(0,0,0,.55); font-size:13px; }
-    .guide {
-      position:absolute; left:50%; top:50%; width:min(68vw,300px); aspect-ratio:1; transform:translate(-50%,-50%);
-      border:2px solid rgba(255,255,255,.75); border-radius:18px;
-      box-shadow:0 0 0 9999px rgba(0,0,0,.12), inset 0 0 30px rgba(95,245,255,.13);
-      transition:.25s;
-    }
-    .guide::before,.guide::after { content:""; position:absolute; inset:14%; border:1px dashed rgba(255,255,255,.35); border-radius:10px; }
-    .guide.found { border-color:#8affc1; box-shadow:0 0 35px rgba(99,255,183,.75),0 0 0 9999px rgba(0,0,0,.05); }
-    .bottom {
-      position:absolute; left:0; right:0; bottom:0; padding:16px 16px max(20px, env(safe-area-inset-bottom));
-      text-align:center; background:linear-gradient(0deg,rgba(5,8,22,.94),rgba(5,8,22,0));
-    }
-    #getBtn {
-      pointer-events:auto; border:0; border-radius:999px; padding:15px 28px; min-width:210px;
-      font-weight:800; font-size:17px; color:#071015;
-      background:linear-gradient(135deg,#fff6a9,#71f8d3); box-shadow:0 8px 28px rgba(80,255,211,.35);
-      opacity:.35; transform:scale(.97); transition:.2s;
-    }
-    #getBtn.ready { opacity:1; transform:scale(1); }
-    #getBtn:disabled { cursor:not-allowed; }
-    #hint { margin:10px 0 0; font-size:13px; opacity:.85; }
-    #toast {
-      position:absolute; left:50%; top:22%; transform:translate(-50%,-20px) scale(.9);
-      width:min(88vw,420px); padding:20px; border:1px solid rgba(255,255,255,.22); border-radius:22px;
-      background:rgba(8,16,35,.92); backdrop-filter:blur(12px); text-align:center;
-      opacity:0; transition:.3s; box-shadow:0 20px 60px rgba(0,0,0,.45);
-    }
-    #toast.show { opacity:1; transform:translate(-50%,0) scale(1); }
-    #toast strong { display:block; font-size:24px; margin-bottom:7px; color:#8affc1; }
-    .sparkle { position:absolute; width:7px; height:7px; border-radius:50%; background:white; animation:float 1.8s ease-in-out infinite; opacity:.8; }
-    @keyframes float { 0%,100%{transform:translateY(0) scale(.6);opacity:.25} 50%{transform:translateY(-24px) scale(1.2);opacity:1} }
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071426;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .ui{position:fixed;inset:0;z-index:10;pointer-events:none;color:#fff}
+    .top{position:absolute;top:0;left:0;right:0;padding:max(16px,env(safe-area-inset-top)) 16px 36px;text-align:center;background:linear-gradient(180deg,rgba(4,12,28,.96),rgba(4,12,28,0))}
+    h1{margin:0;font-size:21px;letter-spacing:.06em;text-shadow:0 3px 12px #000}
+    #status{display:inline-block;margin-top:8px;padding:7px 12px;border-radius:999px;background:rgba(0,0,0,.58);font-size:13px}
+    .guide{position:absolute;left:50%;top:50%;width:min(70vw,310px);aspect-ratio:1;transform:translate(-50%,-50%);border:2px solid rgba(255,255,255,.75);border-radius:18px;box-shadow:0 0 0 9999px rgba(0,0,0,.12);transition:.25s}
+    .guide.found{border-color:#75e7ff;box-shadow:0 0 38px rgba(66,212,255,.85),0 0 0 9999px rgba(0,0,0,.04)}
+    .bottom{position:absolute;left:0;right:0;bottom:0;padding:20px 16px max(22px,env(safe-area-inset-bottom));text-align:center;background:linear-gradient(0deg,rgba(4,12,28,.96),rgba(4,12,28,0))}
+    #talkBtn{pointer-events:auto;border:0;border-radius:999px;padding:15px 26px;min-width:220px;font-weight:800;font-size:16px;color:#071426;background:linear-gradient(135deg,#dff8ff,#69dcff);box-shadow:0 8px 28px rgba(44,198,255,.35);opacity:.35;transform:scale(.97);transition:.2s}
+    #talkBtn.ready{opacity:1;transform:scale(1)}
+    #hint{margin:10px 0 0;font-size:13px;opacity:.88}
+    #bubble{position:absolute;left:50%;top:19%;transform:translate(-50%,-15px) scale(.92);width:min(88vw,420px);padding:18px 20px;border:1px solid rgba(255,255,255,.25);border-radius:22px;background:rgba(6,20,42,.94);backdrop-filter:blur(12px);text-align:center;opacity:0;transition:.28s;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+    #bubble.show{opacity:1;transform:translate(-50%,0) scale(1)}
+    #bubble strong{display:block;font-size:22px;color:#8fe9ff;margin-bottom:5px}
   </style>
 
   <script>
-    AFRAME.registerComponent('magic-crystal', {
-      init: function () {
-        const el = this.el;
-        let t = 0;
-        this.tick = function(time, delta) {
-          t += delta / 1000;
-          el.object3D.rotation.y = t * 1.15;
-          el.object3D.position.y = 0.72 + Math.sin(t * 2.2) * 0.08;
-        };
+    AFRAME.registerComponent('dragon-flight', {
+      init: function () { this.t = 0; },
+      tick: function (time, delta) {
+        this.t += delta / 1000;
+        const o = this.el.object3D;
+        o.position.y = 0.72 + Math.sin(this.t * 2.2) * 0.08;
+        o.rotation.y = Math.sin(this.t * 0.7) * 0.18;
+      }
+    });
+
+    AFRAME.registerComponent('wing-flap', {
+      schema: { side: { default: 1 } },
+      init: function () { this.t = 0; },
+      tick: function (time, delta) {
+        this.t += delta / 1000;
+        this.el.object3D.rotation.z = this.data.side * (0.48 + Math.sin(this.t * 6) * 0.42);
+      }
+    });
+
+    AFRAME.registerComponent('tail-wag', {
+      init: function () { this.t = 0; },
+      tick: function (time, delta) {
+        this.t += delta / 1000;
+        this.el.object3D.rotation.y = Math.sin(this.t * 3) * 0.38;
       }
     });
   </script>
@@ -71,71 +59,119 @@
 <body>
   <div class="ui">
     <div class="top">
-      <h1>✦ 魔法石 AR探索 ✦</h1>
+      <h1>🐉 青い子どもドラゴン</h1>
       <div id="status">マーカーを探しています…</div>
     </div>
 
     <div id="guide" class="guide"></div>
 
-    <div id="toast">
-      <strong>魔法石を獲得！</strong>
-      <span>あなたの冒険の記録に保存しました。</span>
+    <div id="bubble">
+      <strong>ルゥ</strong>
+      <span>「よく来たね、冒険者！ぼくと友だちになって！」</span>
     </div>
 
     <div class="bottom">
-      <button id="getBtn" disabled>魔法石を獲得する</button>
+      <button id="talkBtn" disabled>ドラゴンに話しかける</button>
       <p id="hint">枠の中にHIROマーカーを映してください</p>
     </div>
   </div>
 
-  <a-scene
-    embedded
+  <a-scene embedded
     vr-mode-ui="enabled:false"
-    renderer="antialias:true; alpha:true; logarithmicDepthBuffer:true"
-    arjs="sourceType:webcam; trackingMethod:best; debugUIEnabled:false; detectionMode:mono;"
-  >
-    <a-marker
-      id="marker"
-      preset="hiro"
-      emitevents="true"
-      smooth="true"
-      smooth-count="10"
-      smooth-tolerance="0.01"
-      smooth-threshold="5"
-    >
-      <a-entity id="crystal" magic-crystal position="0 0.72 0">
-        <a-octahedron
-          radius="0.43"
-          color="#65FFE0"
-          material="shader:standard; metalness:.25; roughness:.18; emissive:#116e62; emissiveIntensity:.65; transparent:true; opacity:.94"
-          animation__pulse="property:scale; dir:alternate; dur:900; loop:true; to:1.12 1.12 1.12; easing:easeInOutSine"
-        ></a-octahedron>
-        <a-octahedron
-          radius="0.58"
-          color="#B8FFF2"
-          material="wireframe:true; transparent:true; opacity:.5"
-          animation="property:rotation; dur:5000; loop:true; to:360 720 360; easing:linear"
-        ></a-octahedron>
-        <a-torus
-          position="0 -0.48 0"
-          rotation="90 0 0"
-          radius="0.48"
-          radius-tubular="0.022"
-          color="#FFF3A0"
-          material="emissive:#a67e00; emissiveIntensity:.8"
-          animation="property:rotation; dur:2800; loop:true; to:90 0 360; easing:linear"
-        ></a-torus>
-        <a-sphere position=".55 .15 .05" radius=".045" color="#FFFFFF"
-          animation="property:position; dir:alternate; dur:1200; loop:true; to:.42 .82 -.12; easing:easeInOutSine"></a-sphere>
-        <a-sphere position="-.5 .35 -.08" radius=".035" color="#FFF4A8"
-          animation="property:position; dir:alternate; dur:1600; loop:true; to:-.35 .95 .15; easing:easeInOutSine"></a-sphere>
-        <a-text value="MAGIC STONE" align="center" color="#FFFFFF" width="3.2" position="0 -.73 0" rotation="-90 0 0"></a-text>
+    renderer="antialias:true;alpha:true;logarithmicDepthBuffer:true"
+    arjs="sourceType:webcam;trackingMethod:best;debugUIEnabled:false;detectionMode:mono;">
+
+    <a-marker id="marker" preset="hiro" emitevents="true"
+      smooth="true" smooth-count="10" smooth-tolerance=".01" smooth-threshold="5">
+
+      <a-entity id="dragon" dragon-flight position="0 .72 0" scale=".9 .9 .9">
+
+        <!-- body -->
+        <a-sphere position="0 0 0" scale=".52 .42 .72"
+          material="color:#4ecbff;roughness:.55;metalness:.05"></a-sphere>
+
+        <!-- belly -->
+        <a-sphere position="0 -.07 .34" scale=".28 .3 .28"
+          material="color:#c8f4ff;roughness:.7"></a-sphere>
+
+        <!-- head -->
+        <a-sphere position="0 .43 .39" scale=".42 .38 .38"
+          material="color:#59d2ff;roughness:.5"></a-sphere>
+
+        <!-- snout -->
+        <a-sphere position="0 .36 .7" scale=".27 .18 .3"
+          material="color:#8be1ff;roughness:.65"></a-sphere>
+
+        <!-- eyes -->
+        <a-sphere position="-.15 .53 .67" radius=".072" color="#ffffff"></a-sphere>
+        <a-sphere position=".15 .53 .67" radius=".072" color="#ffffff"></a-sphere>
+        <a-sphere position="-.15 .53 .727" radius=".032" color="#08213a"></a-sphere>
+        <a-sphere position=".15 .53 .727" radius=".032" color="#08213a"></a-sphere>
+
+        <!-- nostrils -->
+        <a-sphere position="-.08 .39 .94" radius=".018" color="#1b6e91"></a-sphere>
+        <a-sphere position=".08 .39 .94" radius=".018" color="#1b6e91"></a-sphere>
+
+        <!-- horns -->
+        <a-cone position="-.19 .74 .34" rotation="-18 0 -18" radius-bottom=".07" radius-top="0" height=".25"
+          material="color:#e6fbff;roughness:.65"></a-cone>
+        <a-cone position=".19 .74 .34" rotation="-18 0 18" radius-bottom=".07" radius-top="0" height=".25"
+          material="color:#e6fbff;roughness:.65"></a-cone>
+
+        <!-- ears -->
+        <a-cone position="-.35 .53 .35" rotation="0 0 70" radius-bottom=".09" radius-top="0" height=".23"
+          material="color:#3bb3e8"></a-cone>
+        <a-cone position=".35 .53 .35" rotation="0 0 -70" radius-bottom=".09" radius-top="0" height=".23"
+          material="color:#3bb3e8"></a-cone>
+
+        <!-- left wing -->
+        <a-entity position="-.48 .18 .02" wing-flap="side:-1">
+          <a-triangle vertex-a="0 0 0" vertex-b="-0.7 .15 -.08" vertex-c="-.28 -.45 .04"
+            material="color:#76dbff;side:double;transparent:true;opacity:.92"></a-triangle>
+          <a-triangle vertex-a="-.28 -.45 .04" vertex-b="-.7 .15 -.08" vertex-c="-.55 -.42 .06"
+            material="color:#b7efff;side:double;transparent:true;opacity:.78"></a-triangle>
+        </a-entity>
+
+        <!-- right wing -->
+        <a-entity position=".48 .18 .02" wing-flap="side:1">
+          <a-triangle vertex-a="0 0 0" vertex-b=".7 .15 -.08" vertex-c=".28 -.45 .04"
+            material="color:#76dbff;side:double;transparent:true;opacity:.92"></a-triangle>
+          <a-triangle vertex-a=".28 -.45 .04" vertex-b=".7 .15 -.08" vertex-c=".55 -.42 .06"
+            material="color:#b7efff;side:double;transparent:true;opacity:.78"></a-triangle>
+        </a-entity>
+
+        <!-- arms and feet -->
+        <a-capsule position="-.31 -.16 .31" rotation="28 0 28" radius=".07" height=".28" color="#4ecbff"></a-capsule>
+        <a-capsule position=".31 -.16 .31" rotation="28 0 -28" radius=".07" height=".28" color="#4ecbff"></a-capsule>
+        <a-sphere position="-.23 -.37 .28" scale=".18 .1 .25" color="#3bb3e8"></a-sphere>
+        <a-sphere position=".23 -.37 .28" scale=".18 .1 .25" color="#3bb3e8"></a-sphere>
+
+        <!-- tail -->
+        <a-entity position="0 -.08 -.58" tail-wag>
+          <a-cone rotation="90 0 0" radius-bottom=".16" radius-top=".035" height=".72"
+            material="color:#3bb3e8;roughness:.55"></a-cone>
+          <a-cone position="0 0 -.42" rotation="-90 0 0" radius-bottom=".12" radius-top="0" height=".24"
+            material="color:#d2f7ff"></a-cone>
+        </a-entity>
+
+        <!-- crest -->
+        <a-cone position="0 .25 -.44" rotation="-90 0 0" radius-bottom=".09" radius-top="0" height=".2" color="#d2f7ff"></a-cone>
+        <a-cone position="0 .46 -.24" rotation="-70 0 0" radius-bottom=".08" radius-top="0" height=".18" color="#d2f7ff"></a-cone>
+
+        <!-- sparkle ring -->
+        <a-torus position="0 -.47 0" rotation="90 0 0" radius=".58" radius-tubular=".018"
+          material="color:#9cecff;emissive:#167da5;emissiveIntensity:.8"
+          animation="property:rotation;dur:3400;loop:true;to:90 0 360;easing:linear"></a-torus>
+
+        <a-text value="RUE - BABY DRAGON" align="center" color="#ffffff"
+          width="3.1" position="0 -.71 .05" rotation="-90 0 0"></a-text>
       </a-entity>
 
-      <a-circle position="0 .01 0" rotation="-90 0 0" radius=".72"
-        material="color:#58ffe0; transparent:true; opacity:.16"
-        animation="property:scale; dir:alternate; dur:1000; loop:true; to:1.22 1.22 1.22"></a-circle>
+      <a-circle position="0 .01 0" rotation="-90 0 0" radius=".78"
+        material="color:#51d8ff;transparent:true;opacity:.14"
+        animation="property:scale;dir:alternate;dur:1000;loop:true;to:1.2 1.2 1.2"></a-circle>
     </a-marker>
+
     <a-entity camera></a-entity>
   </a-scene>
 
@@ -143,18 +179,18 @@
     const marker = document.getElementById('marker');
     const statusEl = document.getElementById('status');
     const guide = document.getElementById('guide');
-    const btn = document.getElementById('getBtn');
-    const toast = document.getElementById('toast');
+    const btn = document.getElementById('talkBtn');
+    const bubble = document.getElementById('bubble');
     const hint = document.getElementById('hint');
     let visible = false;
 
     marker.addEventListener('markerFound', () => {
       visible = true;
-      statusEl.textContent = '魔法石を発見しました！';
+      statusEl.textContent = '青いドラゴン「ルゥ」を発見！';
       guide.classList.add('found');
       btn.disabled = false;
       btn.classList.add('ready');
-      hint.textContent = 'ボタンを押して魔法石を獲得しよう';
+      hint.textContent = 'ルゥに話しかけてみよう';
       if (navigator.vibrate) navigator.vibrate([80,40,80]);
     });
 
@@ -162,30 +198,17 @@
       visible = false;
       statusEl.textContent = 'マーカーを探しています…';
       guide.classList.remove('found');
-      if (!localStorage.getItem('magicStone1')) {
-        btn.disabled = true;
-        btn.classList.remove('ready');
-      }
+      btn.disabled = true;
+      btn.classList.remove('ready');
+      bubble.classList.remove('show');
+      hint.textContent = '枠の中にHIROマーカーを映してください';
     });
-
-    if (localStorage.getItem('magicStone1')) {
-      btn.textContent = '✓ 獲得済み';
-      btn.disabled = false;
-      btn.classList.add('ready');
-      hint.textContent = 'この端末には獲得記録が保存されています';
-    }
 
     btn.addEventListener('click', () => {
-      if (!visible && !localStorage.getItem('magicStone1')) return;
-      localStorage.setItem('magicStone1', new Date().toISOString());
-      btn.textContent = '✓ 獲得済み';
-      toast.classList.add('show');
-      if (navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
-      setTimeout(() => toast.classList.remove('show'), 2800);
-    });
-
-    window.addEventListener('camera-error', () => {
-      statusEl.textContent = 'カメラを許可してください';
+      if (!visible) return;
+      bubble.classList.add('show');
+      if (navigator.vibrate) navigator.vibrate([70,35,120]);
+      setTimeout(() => bubble.classList.remove('show'), 4200);
     });
   </script>
 </body>
