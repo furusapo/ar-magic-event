@@ -56,7 +56,7 @@ a-scene {
 <a-scene embedded vr-mode-ui="enabled:false" renderer="antialias:true;alpha:true;colorManagement:true" arjs="sourceType:webcam;trackingMethod:best;debugUIEnabled:false;detectionMode:mono;">
 <a-assets><a-asset-item id="dragonModel" src="dragon-blue.glb"></a-asset-item></a-assets>
 <a-marker id="marker" preset="hiro" emitevents="true" smooth="true" smooth-count="12" smooth-tolerance=".01" smooth-threshold="5">
-<a-entity float-idle position="0 .14 0" rotation="-90 0 0" scale=".68 .68 .68">
+<a-entity float-idle position="0 .14 0" rotation="0 180 0" scale=".68 .68 .68">
 <a-gltf-model src="#dragonModel"></a-gltf-model>
 </a-entity>
 <a-circle position="0 .01 0" rotation="-90 0 0" radius=".82" material="color:#58dcff;transparent:true;opacity:.14" animation="property:scale;dir:alternate;dur:1000;loop:true;to:1.18 1.18 1.18"></a-circle>
