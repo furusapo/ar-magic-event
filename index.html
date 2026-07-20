@@ -124,51 +124,51 @@ AFRAME.registerComponent('sparkle-orbit',{
     <a-entity id="circle" magic-float position="0 .035 0">
 
       <!-- 外周リング -->
-      <a-torus rotation="90 0 0" radius=".82" radius-tubular=".025"
+      <a-torus rotation="0 0 0" radius=".82" radius-tubular=".025"
         material="color:#7cecff;emissive:#147ea3;emissiveIntensity:1.1"
-        animation="property:rotation;dur:9000;loop:true;to:90 0 360;easing:linear">
+        animation="property:rotation;dur:9000;loop:true;to:0 0 360;easing:linear">
       </a-torus>
 
-      <a-torus rotation="90 0 0" radius=".68" radius-tubular=".012"
+      <a-torus rotation="0 0 0" radius=".68" radius-tubular=".012"
         material="color:#c3f8ff;emissive:#238ead;emissiveIntensity:.9"
-        animation="property:rotation;dur:7000;loop:true;to:90 0 -360;easing:linear">
+        animation="property:rotation;dur:7000;loop:true;to:0 0 -360;easing:linear">
       </a-torus>
 
       <!-- 魔法陣の円盤 -->
-      <a-circle rotation="-90 0 0" radius=".78"
+      <a-circle rotation="0 0 0" radius=".78"
         material="color:#28c8ef;transparent:true;opacity:.12;side:double">
       </a-circle>
 
       <!-- 六芒星 -->
-      <a-triangle rotation="-90 0 0"
+      <a-triangle rotation="0 0 0"
         vertex-a="0 .66 0" vertex-b="-.57 -.33 0" vertex-c=".57 -.33 0"
         material="color:#9befff;wireframe:true;transparent:true;opacity:.92;side:double">
       </a-triangle>
 
-      <a-triangle rotation="-90 0 180"
+      <a-triangle rotation="0 0 180"
         vertex-a="0 .66 0" vertex-b="-.57 -.33 0" vertex-c=".57 -.33 0"
         material="color:#9befff;wireframe:true;transparent:true;opacity:.92;side:double">
       </a-triangle>
 
       <!-- 中央ルーン -->
-      <a-ring rotation="-90 0 0" radius-inner=".18" radius-outer=".23"
+      <a-ring rotation="0 0 0" radius-inner=".18" radius-outer=".23"
         material="color:#ffffff;emissive:#63dfff;emissiveIntensity:1.2;transparent:true;opacity:.95">
       </a-ring>
 
-      <a-ring rotation="-90 0 0" radius-inner=".30" radius-outer=".315"
+      <a-ring rotation="0 0 0" radius-inner=".30" radius-outer=".315"
         material="color:#72e9ff;emissive:#168daf;emissiveIntensity:1;transparent:true;opacity:.85"
-        animation="property:rotation;dur:4500;loop:true;to:-90 0 360;easing:linear">
+        animation="property:rotation;dur:4500;loop:true;to:0 0 360;easing:linear">
       </a-ring>
 
       <!-- ルーン文字風 -->
       <a-text value="A  R  C  A  N  A"
         align="center" color="#d9fbff" width="2.2"
-        position="0 .045 .44" rotation="-90 0 0">
+        position="0 .045 .44" rotation="0 0 0">
       </a-text>
 
       <a-text value="L  U  M  E  N"
         align="center" color="#d9fbff" width="1.7"
-        position="0 .048 -.43" rotation="-90 180 0">
+        position="0 .048 -.43" rotation="0 180 0">
       </a-text>
 
       <!-- 光の柱 -->
@@ -194,7 +194,7 @@ AFRAME.registerComponent('sparkle-orbit',{
       </a-sphere>
 
       <!-- 床の光 -->
-      <a-circle rotation="-90 0 0" radius=".9"
+      <a-circle rotation="0 0 0" radius=".9"
         material="color:#4addff;transparent:true;opacity:.08"
         animation="property:scale;dir:alternate;dur:1200;loop:true;to:1.12 1.12 1.12;easing:easeInOutSine">
       </a-circle>
